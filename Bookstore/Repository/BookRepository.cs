@@ -1,4 +1,6 @@
-﻿using Bookstore.Models;
+﻿using Bookstore.Data;
+using Bookstore.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +10,83 @@ namespace Bookstore.Repository
 {
     public class BookRepository
     {
-        public List<BookModel> GetAllBooks()
+        private BookStoreContext _context;
+
+        public BookRepository(BookStoreContext context)
         {
-            return DataSource();
+            _context = context;
         }
 
-        public BookModel GetBookId(int Id) 
+        public async Task<List<BookModel>> GetAllBooks()
         {
-            return DataSource().Where(X => X.Id == Id).FirstOrDefault();
+            var books = new List<BookModel>();
+            var allbooks = await _context.Books.ToListAsync();
+            if (allbooks?.Any() == true)
+            {
+                foreach (var book in allbooks)
+                {
+                    books.Add(new BookModel()
+                    {
+                        Author = book.Author,
+                        Category = book.Category,
+                        Title = book.Title,
+                        Description = book.Description,
+                        Id = book.Id,
+                        Language = book.Language,
+                        Pages = book.Pages
+                    }); ;
+                }
+            }
+
+            return books;
+
+            //return DataSource();
         }
+
+        public async Task<BookModel> GetBookId(int Id) 
+        {
+
+            var book = await _context.Books.FindAsync(Id);
+
+            if ( book != null)
+            {
+                var bookmodel = new BookModel()
+                {
+                    Author = book.Author,
+                    Category = book.Category,
+                    Title = book.Title,
+                    Description = book.Description,
+                    Id = book.Id,
+                    Language = book.Language,
+                    Pages = book.Pages
+                };
+                return (bookmodel);
+            }
+
+            return null;
+            //return DataSource().Where(X => X.Id == Id).FirstOrDefault();
+        }
+
+        public async Task<int> AddBook(BookModel book)
+        {
+            var newbook = new Books
+            {
+                Author = book.Author,
+                Title = book.Title,
+                Description = book.Description,
+                Category = book.Category,
+                Pages = book.Pages,
+                Language = book.Language,
+                CreatedOn = DateTime.Now,
+                UpdatedOn = DateTime.Now
+            };
+
+            await _context.Books.AddAsync(newbook);
+            await _context.SaveChangesAsync();
+
+            return newbook.Id;
+        }
+
 
         public List<BookModel> SearchBook(String Title, String Author)
         {

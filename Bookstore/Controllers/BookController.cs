@@ -1,4 +1,5 @@
-﻿using Bookstore.Models;
+﻿using Bookstore.Data;
+using Bookstore.Models;
 using Bookstore.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,13 +12,16 @@ namespace Bookstore.Controllers
     public class BookController : Controller
     {
         private BookRepository _bookrepository;
-        public BookController(BookRepository bookrepository)
+                 
+        public BookController(BookRepository bookrepository )
         {
             _bookrepository = bookrepository;
+            
         }
-        public IActionResult GetAllBooks()
+        public async Task<IActionResult> GetAllBooks()
         {
-            return View(_bookrepository.GetAllBooks());
+            var books = await _bookrepository.GetAllBooks();
+            return View(books);                
         }
 
         public IActionResult Index()
@@ -25,9 +29,34 @@ namespace Bookstore.Controllers
             return View(_bookrepository.GetAllBooks());
         }
 
-        public IActionResult GetBook(int id)
+        public async Task<IActionResult> GetBook(int id)
         {
-            return View(_bookrepository.GetBookId(id));                
+            var book = await _bookrepository.GetBookId(id);
+            //return View(_bookrepository.GetBookId(id));                
+            return View(book);
+        }
+
+        public IActionResult Addbook(bool isSuccess = false , int bookId = 0)
+        {
+            
+                ViewBag.IsSuccess = isSuccess;
+                ViewBag.BookId = bookId;
+                return View();
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Addbook(BookModel book )
+        {
+            if (ModelState.IsValid)
+            {
+                int id = await _bookrepository.AddBook(book);
+                if (id > 0)
+                {
+                    return RedirectToAction(nameof(Addbook), new { IsSuccess = true, BookId = id });
+                }
+            }
+            return View();
         }
 
         public List<BookModel> SearchBook(String Title, string Author)
