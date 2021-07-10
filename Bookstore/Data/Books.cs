@@ -12,10 +12,12 @@ namespace Bookstore.Data
         public string Author { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
-        public string Pages { get; set; }
-        public string Language { get; set; }
+        public int Pages { get; set; }
+        public string CoverPageURL { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
-
+        public int LanguageId { get; set; }
+        public Language Language { get; set; }
+        public ICollection<BookGallery>  bookGallary { get; set; }
     }
 }

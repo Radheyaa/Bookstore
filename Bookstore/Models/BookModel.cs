@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,7 +21,22 @@ namespace Bookstore.Models
         public string Category { get; set; }
         [Required(ErrorMessage = "Please Enter the Pages")]
         [Display(Name ="Total Pages")]
-        public string Pages { get; set; }
+        public int Pages { get; set; }
+        [Required(ErrorMessage ="Please enter Langauge")]
+        public int LanguageId { get; set; }
         public string Language { get; set; }
+
+        [Display(Name = "Please choose Cover Photo")]
+        [Required]
+        public IFormFile CoverPhoto { get; set; }
+
+        public  string CoverImageURL { get; set; }
+
+        [Display(Name = "Please choose multiple images for the gallary")]
+        [Required]
+        public IFormFileCollection GallaryFiles { get; set; }
+
+
+        public List<GallaryModel> Gallary { get; set; }
     }
 }

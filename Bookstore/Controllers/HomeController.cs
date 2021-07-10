@@ -1,4 +1,5 @@
 ﻿using Bookstore.Models;
+using Bookstore.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,13 +14,33 @@ namespace Bookstore.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IUserService UserService;
+
+        public IEmailService _emailService { get; }
+
+        public HomeController(ILogger<HomeController> logger , IUserService userService, IEmailService emailService)
         {
             _logger = logger;
+            UserService = userService;
+            _emailService = emailService;
         }
 
-        public IActionResult Index()
+        public async Task<ViewResult> Index()
         {
+            //UserEmailOptions userEmailOptions = new UserEmailOptions()
+            //{
+            //    ToEmail = new List<string>() { "test@gmail.com " },
+            //    PlaceHolder = new List<KeyValuePair<string, string>>()
+            //    {
+            //        new KeyValuePair<string, string>("{{username}}","Prashant Shetye")
+            //    }
+            //};
+
+            //await _emailService.SendTestEmail(userEmailOptions);
+
+            //ViewBag.userId = UserService.getUserId();
+            //ViewBag.isAuthenticated = UserService.IsAuthenticated();
+
             return View();
         }
 
@@ -33,5 +54,7 @@ namespace Bookstore.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
     }
 }
